@@ -1,0 +1,194 @@
+
+
+description "A policy for RubyGems"
+
+(def)githubAttestation owner="string" repository="string" workflow="string" environment="string?" {
+  attestation {
+    x509.issuer "https://token.actions.githubusercontent.com"
+    (var)san {
+      (op)"+" "URI:https://github.com/" (var)"owner" "/" (var)"repository" "/.github/workflows/" (var)"workflow" "@" (attr)"x509.sourceRepositoryRef"
+    }
+    x509.subjectAltName (var)"san"
+    // need to be able to construct a string of what is expected for the buildConfigURI
+    // based on the ref
+    // "buildConfigURI"=>"https://github.com/sigstore/sigstore-ruby/.github/workflows/release.yml@refs/tags/v0.1.1"
+    // "sourceRepositoryRef"=>"refs/tags/v0.1.1"
+    // "subjectAltName"=>"URI:https://github.com/sigstore/sigstore-ruby/.github/workflows/release.yml@refs/tags/v0.1.1"
+
+    messageSignature
+    /- "" {
+      messageSignature
+      "" {
+        dsseEnvelope.payloadType "application/vnd.in-toto+json"
+        dsseEnvelope.payload {
+          _type "https://in-toto.io/Statement/v1"
+          predicateType "https://slsa.dev/provenance/v1"
+          predicate.buildDefinition.externalParameters.workflow.repository (var)"repository"
+        }
+      }
+    }
+  }
+}
+
+rubygem "rails" {
+  version.major 7
+}
+
+rubygem "sigstore" {
+  version.major 0
+  version.minor 1
+  /- version.patch 2
+  version {
+    /- exact "0.1.2"
+    exact "0.1.1"
+    /- exact "0.1.3"
+  }
+}
+
+rubygem "sigstore" {
+  platform "ruby"
+  version { major 0; minor 1 }
+
+  (call)githubAttestation owner="sigstore" repository="sigstore-ruby" workflow="release.yml"
+}
+
+rubygem (regex)"sig[s]tore" {
+  platform "ruby"
+  version { major 0; minor 1 }
+
+  (call)githubAttestation owner="sigstore" repository="sigstore-ruby" workflow="release.yml"
+}
+
+rubygem "literal" {
+  version { exact "1.1.0" }
+}
+
+rubygem "parallel" { version.exact "1.26.3" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rake" { version.exact "13.2.1"; digest.sha256 "46cb38dae65d7d74b6020a4ac9d48afed8eb8149c040eccf0523bec91907059d" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "ast" { version.exact "2.4.2"; digest.sha256 "1e280232e6a33754cde542bc5ef85520b74db2aac73ec14acef453784447cc12" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "attr_extras" { version.exact "7.1.0"; digest.sha256 "d96fc9a9dd5d85ba2d37762440a816f840093959ae26bb90da994c2d9f1fc827" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "base64" { version.exact "0.2.0"; digest.sha256 "0f25e9b21a02a0cc0cea8ef92b2041035d39350946e8789c562b2d1a3da01507" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "bigdecimal" { version.exact "3.1.8"; digest.sha256 "a89467ed5a44f8ae01824af49cbc575871fa078332e8f77ea425725c1ffe27be" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "diff-lcs" { version.exact "1.5.1"; digest.sha256 "273223dfb40685548436d32b4733aa67351769c7dea621da7d9dd4813e63ddfe" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "json" { version.exact "2.8.1"; digest.sha256 "404e8ca4c2ef6c7a6fa15bb9e2e280f3523334b78a83f22268297fe7939ee22a" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "racc" { version.exact "1.8.1"; digest.sha256 "4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "simpleidn" { version.exact "0.2.3"; digest.sha256 "08ce96f03fa1605286be22651ba0fc9c0b2d6272c9b27a260bc88be05b0d2c29" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "kdl" { version.exact "1.0.6"; digest.sha256 "372b05de298a7fd757fbc421f71464807ffbf24f32862938236e807858d6f574" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "language_server-protocol" { version.exact "3.17.0.3"; digest.sha256 "3d5c58c02f44a20d972957a9febe386d7e7468ab3900ce6bd2b563dd910c6b3f" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "uri" { version.exact "0.13.1"; digest.sha256 "df2d8b13e3e8c8a43432637e2ace4f9de7b42674361b4dd26302b40f7d7fcd1e" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "net-http" { version.exact "0.4.1"; digest.sha256 "a96efc5ea18bcb9715e24dda4159d10f67ff0345c8a980d04630028055b2c282" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "optimist" { version.exact "3.1.0"; digest.sha256 "81886f53ee8919f330aa30076d320d88eef9bc85aae2275376b4afb007c69260" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "parser" { version.exact "3.3.6.0"; digest.sha256 "25d4e67cc4f0f7cab9a2ae1f38e2005b6904d2ea13c34734511d0faad038bc3b" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "patience_diff" { version.exact "1.2.0"; digest.sha256 "f492094486af02fff4a80070fa6b4d0ebbcf4d42fb38bba29d095eef43f6822c" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "protobug" { version.exact "0.1.0"; digest.sha256 "5bf1356cedf99dcf311890743b78f5e602f62ca703e574764337f1996b746bf2" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "protobug_well_known_protos" { version.exact "0.1.0"; digest.sha256 "356757f562453bb34a28f12e8e9fa357346cca35a6807a549837c3fe256bb5b3" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "protobug_googleapis_field_behavior_protos" { version.exact "0.1.0"; digest.sha256 "db48ef6a5913b2355b4a6931ab400a9e3e995fb48499977a3ad0be6365f9e265" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "protobug_sigstore_protos" { version.exact "0.1.0"; digest.sha256 "4ad1eebaf6454131b6f432dda50ad0e513773613474b92470847614a5acacce1" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rainbow" { version.exact "3.1.1"; digest.sha256 "039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "regexp_parser" { version.exact "2.9.2"; digest.sha256 "5a27e767ad634f8a4b544520d5cd28a0db7aa1198a5d7c9d7e11d7b3d9066446" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rspec-support" { version.exact "3.13.1"; digest.sha256 "48877d4f15b772b7538f3693c22225f2eda490ba65a0515c4e7cf6f2f17de70f" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rspec-core" { version.exact "3.13.2"; digest.sha256 "94fbda6e4738e478f1c7532b7cc241272fcdc8b9eac03a97338b1122e4573300" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rspec-expectations" { version.exact "3.13.3"; digest.sha256 "0e6b5af59b900147698ea0ff80456c4f2e69cac4394fbd392fbd1ca561f66c58" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rspec-mocks" { version.exact "3.13.2"; digest.sha256 "2327335def0e1665325a9b617e3af9ae20272741d80ac550336309a7c59abdef" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rspec" { version.exact "3.13.0"; digest.sha256 "d490914ac1d5a5a64a0e1400c1d54ddd2a501324d703b8cfe83f458337bab993" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rubocop-ast" { version.exact "1.34.0"; digest.sha256 "0f8e52a9b7b0474caa7c45de74803fa254c5051e4885e4dff31cde62ffd7e2d7" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "ruby-progressbar" { version.exact "1.13.0"; digest.sha256 "80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "unicode-display_width" { version.exact "2.6.0"; digest.sha256 "12279874bba6d5e4d2728cef814b19197dbb10d7a7837a869bab65da943b7f5a" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "rubocop" { version.exact "1.68.0"; digest.sha256 "07df508504d81e97174e8d21030f25d52c1be7ee8615939db43f3b377ea6c12b" }
+
+
+/* Added automatically by sigstore-verification */
+rubygem "super_diff" { version.exact "0.13.0"; digest.sha256 "8529bc933da35caa0453bebcf934f7421b599dca56c01cbfb487f50f810e5694" }
