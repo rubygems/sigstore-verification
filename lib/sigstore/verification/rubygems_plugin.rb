@@ -142,8 +142,7 @@ module Sigstore::Verification
                                    "Would you like to add a new policy for this subject?"
           if add_policy
             File.open(filename, "a") do |f|
-              f.puts "\n\n"
-              f.puts "/* Added automatically by sigstore-verification */"
+              f.puts "\n\n/* Added automatically by sigstore-verification */"
               f.puts "rubygem #{subject.name.inspect} { version.exact #{subject.version["exact"].inspect}; digest.sha256 #{digest.inspect} }"
             end
             return true
