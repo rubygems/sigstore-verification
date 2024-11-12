@@ -13,6 +13,8 @@ GEM
     base64 (0.2.0)
     bigdecimal (3.1.8)
     diff-lcs (1.5.1)
+    docile (1.4.1)
+    fiddle (1.1.2)
     json (2.8.1)
     kdl (1.0.6)
       base64 (~> 0.2.0)
@@ -69,11 +71,24 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.34.0)
       parser (>= 3.3.1.0)
+    rubocop-performance (1.22.1)
+      rubocop (>= 1.48.1, < 2.0)
+      rubocop-ast (>= 1.31.1, < 2.0)
+    rubocop-rake (0.6.0)
+      rubocop (~> 1.0)
+    rubocop-rspec (3.1.0)
+      rubocop (~> 1.61)
     ruby-progressbar (1.13.0)
     sigstore (0.1.1)
       net-http
       protobug_sigstore_protos (~> 0.1.0)
       uri
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.13.1)
+    simplecov_json_formatter (0.1.4)
     simpleidn (0.2.3)
     super_diff (0.13.0)
       attr_extras (>= 6.2.4)
@@ -87,13 +102,18 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  fiddle
   kdl (~> 1.0)
   literal
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
+  rubocop-performance
+  rubocop-rake
+  rubocop-rspec
   sigstore
   sigstore-verification!
+  simplecov
   super_diff (~> 0.13.0)
 
 BUNDLED WITH

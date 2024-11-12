@@ -1,0 +1,40 @@
+(def)githubAttestation owner="string" repository="string" workflow="string" environment="string?" {
+  attestation {
+    x509 {
+      issuerV2 "https://token.actions.githubusercontent.com"
+      (var)buildConfigURI {
+        (op)"+" "https://github.com/" (var)"owner" "/" (var)"repository" "/.github/workflows/" (var)"workflow" "@" (attr)"sourceRepositoryRef"
+      }
+      (var)san {
+        (op)"+" "URI:" (var)"buildConfigURI"
+      }
+      buildConfigURI (var)"buildConfigURI"
+      subjectAltName (var)"san"
+    }
+    // need to be able to construct a string of what is expected for the buildConfigURI
+    // based on the ref
+    // "buildConfigURI"=>"https://github.com/sigstore/sigstore-ruby/.github/workflows/release.yml@refs/tags/v0.1.1"
+    // "sourceRepositoryRef"=>"refs/tags/v0.1.1"
+    // "subjectAltName"=>"URI:https://github.com/sigstore/sigstore-ruby/.github/workflows/release.yml@refs/tags/v0.1.1"
+
+    messageSignature
+    (oneof)_ {
+      messageSignature
+      dsseEnvelope {
+        payloadType "application/vnd.in-toto+json"
+        payload {
+          _type "https://in-toto.io/Statement/v1"
+          predicateType "https://slsa.dev/provenance/v1"
+          predicate.buildDefinition.externalParameters.workflow.repository (var)"repository"
+        }
+      }
+    }
+  }
+}
+
+
+
+/* Added automatically by sigstore-verification */
+rubygem "sigstore" {
+  (call)githubAttestation owner="sigstore" repository="sigstore-ruby" workflow="release.yml"
+}

@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
-require "super_diff/rspec"
+require "simplecov"
+SimpleCov.configure do
+  add_filter "spec/"
+  enable_coverage :branch
+end
+SimpleCov.start
 
+require "super_diff/rspec"
 require "sigstore/verification"
 
 RSpec.configure do |config|

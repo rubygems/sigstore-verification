@@ -1,0 +1,5 @@
+rubygem "sigstore" {
+  attestation {
+    x509.subjectAltName "🤔"
+  }
+}

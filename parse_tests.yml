@@ -1,0 +1,196 @@
+---
+- name: rubocop-rspec
+  input: |
+    rubygem "rubocop-rspec" {
+      version.exact "3.1.0"
+      digest.sha256 "abcabcabcabc"
+    }
+  formatted: |
+    rubygem "rubocop-rspec" {
+      version.exact "3.1.0"
+      digest.sha256 "abcabcabcabc"
+    }
+  syntax_tree: !ruby/object:KDL::Document
+    nodes:
+    - !ruby/object:KDL::Node
+      name: rubygem
+      arguments:
+      - !ruby/object:KDL::Value::String
+        value: rubocop-rspec
+        format:
+        type:
+      properties: {}
+      children:
+      - !ruby/object:KDL::Node
+        name: version.exact
+        arguments:
+        - !ruby/object:KDL::Value::String
+          value: 3.1.0
+          format:
+          type:
+        properties: {}
+        children: []
+        type:
+      - !ruby/object:KDL::Node
+        name: digest.sha256
+        arguments:
+        - !ruby/object:KDL::Value::String
+          value: abcabcabcabc
+          format:
+          type:
+        properties: {}
+        children: []
+        type:
+      type:
+- name: empty
+  input: ''
+  syntax_tree: !ruby/object:KDL::Document
+    nodes: []
+- name: whitespace
+  input: " "
+  syntax_tree: !ruby/object:KDL::Document
+    nodes: []
+- name: 'bare #'
+  input: "#"
+  syntax_tree: !ruby/object:KDL::Document
+    nodes:
+    - !ruby/object:KDL::Node
+      name: "#"
+      arguments: []
+      properties: {}
+      children: []
+      type:
+- name: multiline comment as whitespace
+  input: 'foo/*bar*/""
+
+    '
+  syntax_tree: !ruby/object:KDL::Document
+    nodes:
+    - !ruby/object:KDL::Node
+      name: foo
+      arguments:
+      - !ruby/object:KDL::Value::String
+        value: ''
+      properties: {}
+      children: []
+- name: quote in ident
+  input: 'foo""
+
+    '
+  racc_error: parse error on value "" (1:4) (STRING)
+  error: |
+    Error at <unknown>:1:0 (byte 0): expected node id (in :nodes)
+    foo""
+    ^
+- name: quote in ident
+  input: 'foo"bar"
+
+    '
+  racc_error: parse error on value "bar" (1:4) (STRING)
+  error: |
+    Error at <unknown>:1:0 (byte 0): expected node id (in :nodes)
+    foo"bar"
+    ^
+  rust_error: |
+    Error:   × Expected valid node terminator.
+       ╭────
+     1 │ foo""
+       · ─┬─
+       ·  ╰── parsed node
+       ╰────
+     help: Nodes can only be terminated by `;` or a valid line ending.
+- name: escape at EOF after string ident
+  input: '"foo"\'
+  racc_error: parse error on value :EOF (2:1) (EOF)
+  error: |
+    Error at <unknown>:1:5 (byte 5): expected argument or property for "foo" (in :value)
+    "foo"\
+         ^
+  rust_error: |
+    Error:   × Expected newline after line escape.
+       ╭────
+     1 │ "foo"\
+       ·      ┬
+       ·      ╰── line escape starts here
+       ╰────
+      help: line escapes can only be followed by whitespace plus a newline (or
+            single-line comment).
+- name: unclosed nodes
+  input: |
+    _ {
+      _ {}
+  racc_error: parse error on value :EOF (3:1) ($end)
+  error: |
+    Error at <unknown>:3:0 (byte 11): unclosed nodes:
+
+    _ {
+        _
+    }
+     (in :nodes)
+    _ {
+      _ {}
+
+    ^
+- name: node after semicolon with no space
+  input: '_{};_    '
+  syntax_tree: !ruby/object:KDL::Document
+    nodes:
+    - !ruby/object:KDL::Node
+      name: _
+      arguments: []
+      properties: {}
+      children: []
+      type:
+    - !ruby/object:KDL::Node
+      name: _
+      arguments: []
+      properties: {}
+      children: []
+      type:
+- name: node after node with space
+  input: '_{} _
+
+    '
+  rust_error: |
+    Error:   × Expected valid node terminator.
+       ╭────
+     1 │ _{} _
+       · ───
+       ·  ╰── parsed node
+       ╰────
+      help: Nodes can only be terminated by `;` or a valid line ending.
+- name: node after node with comment and no space
+  input: '_{}/**/_
+
+    '
+  rust_error: |
+    Error:   × Expected valid node terminator.
+       ╭────
+     1 │ _{}/**/_
+       · ───┬───
+       ·    ╰── parsed node
+       ╰────
+      help: Nodes can only be terminated by `;` or a valid line ending.
+  racc_error: parse error on value "_" (1:4) (IDENT)
+  error: |
+    Error at <unknown>:1:2 (byte 2): expected node terminator (in :nodes)
+    _{}/**/_
+           ^
+- name: dangling property
+  input: '_ foo= {}
+
+    '
+  racc_error: parse error on value " " (1:7) (WS)
+  error: |
+    Error at <unknown>:1:6 (byte 6): expected value for property "foo" (in :value)
+    _ foo= {}
+          ^
+  rust_error: |
+    Error:   × Expected property value.
+       ╭────
+     1 │ _ foo= {}
+       ·       ▲
+       ·       ╰── invalid value
+       ╰────
+      help: Please refer to https://github.com/kdl-org/kdl/blob/main/
+            SPEC.md#value for valid KDL value syntaxes.
